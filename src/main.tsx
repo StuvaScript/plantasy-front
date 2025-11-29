@@ -5,7 +5,11 @@ import App from "./App.jsx";
 import "./index.css";
 import { AuthProvider } from "./auth/AuthContext.jsx";
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+const root: HTMLElement | null = document.getElementById("root");
+
+if (!root) throw new Error(`An element with the ID of "root" doesn't exist.`);
+
+ReactDOM.createRoot(root).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>

@@ -3,26 +3,27 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 
 export default function Navbar() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const { token, logout } = useAuth();
 
   useEffect(() => {
-    const onResize = () => {
+    const onResize = (): void => {
       if (window.innerWidth >= 768) setOpen(false);
     };
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    return (): void => window.removeEventListener("resize", onResize);
   }, []);
 
   useEffect(() => {
-    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    const onKey = (e: KeyboardEvent): false | void =>
+      e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return (): void => window.removeEventListener("keydown", onKey);
   }, []);
 
   const linkBase =
     "block px-4 py-2 rounded-md hover:bg-green-700/40 focus:outline-none focus:ring-2 focus:ring-white/50";
-  const link = ({ isActive }) =>
+  const link = ({ isActive }: { isActive: boolean }): string =>
     `${linkBase} ${isActive ? "bg-green-700/60" : ""}`;
 
   return (

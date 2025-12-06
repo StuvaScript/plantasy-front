@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setToken(saved);
       try {
         const savedUser = localStorage.getItem("user");
-        if (savedUser) setUser(JSON.parse(savedUser) as User); //todo <-- Ask what the "as" keyword does and why I should type the parse function
+        if (savedUser) setUser(JSON.parse(savedUser) as User);
       } catch {}
     }
     setLoading(false);
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await api.post("/auth/login", {
           email,
           password,
-        }); //todo <-- Ask about the data type. Need to add types to apiClient file
+        }); //todo <-- I can add api.post<LoginResponse>() once I define the generic for my post function in apiClient.jsx
 
         if (!data?.token) {
           throw new Error("Login did not return a token");

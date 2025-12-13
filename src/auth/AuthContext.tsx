@@ -12,7 +12,7 @@ import api, {
   setToken as setApiToken,
   getStoredToken,
   clearToken as clearApiToken,
-} from "../lib/apiClient.jsx";
+} from "../lib/apiClient";
 
 type Params = {
   name: string;
@@ -61,14 +61,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
+  type LoginBody = {
+    email: string;
+    password: string;
+  };
+
+  type LoginResponse = { stuff: changeMe!! };
+
   const login = useCallback(
     async ({ email, password }: Omit<Params, "name">): Promise<boolean> => {
       try {
-        const data = await api.post("/auth/login", {
+        const data = await api.post<LoginBody, LoginResponse>("/auth/login", {
           email,
           password,
-        }); //todo <-- I can add api.post<LoginResponse>() once I define the generic for my post function in apiClient.jsx
+        });
 
+        console.log("login data:", data);
         if (!data?.token) {
           throw new Error("Login did not return a token");
         }
@@ -93,11 +101,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = useCallback(
     async ({ name, email, password }: Params): Promise<boolean> => {
       try {
-        const data = await api.post("/auth/register", {
-          name,
-          email,
-          password,
-        }); //todo <-- Ask about the data type. Need to add types to apiClient file
+        const data = await api.post<SignupBody, SignupResponse>(
+          "/auth/register",
+          {
+            name,
+            email,
+            password,
+          }
+        );
+        console.log("signup data:", data);
 
         if (!data?.token) {
           throw new Error("Signup did not return a token");

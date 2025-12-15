@@ -68,6 +68,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   type LoginResponse = { stuff: changeMe!! };
 
+  //todo ``** Go through the apiClients.ts file
+
   const login = useCallback(
     async ({ email, password }: Omit<Params, "name">): Promise<boolean> => {
       try {

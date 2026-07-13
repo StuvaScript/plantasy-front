@@ -3,8 +3,12 @@ import api from "../lib/apiClient";
 import PlantGrid from "../components/PlantGrid";
 import Button from "../components/shared/Button";
 import { useLocation, useNavigate } from "react-router-dom";
-import { fillerPlantData } from "../data/fillerPlantData";
 import SortButton from "../components/SortButton";
+
+const searchPlants = async (searchName) => {
+  const res = await api.get(`/identifyPlants?name=${searchName}`);
+  return res.data;
+};
 
 export default function ExplorerPage() {
   const location = useLocation();
@@ -13,7 +17,7 @@ export default function ExplorerPage() {
   const [plants, setPlants] = useState(
     (state?.linkedFrom === "details page" &&
       JSON.parse(sessionStorage.getItem("plants"))) ||
-      handleFillerPlantData()
+      []
   );
   const [searchName, setSearchName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -22,10 +26,19 @@ export default function ExplorerPage() {
 
   const navigate = useNavigate();
 
-  function handleFillerPlantData() {
-    sessionStorage.setItem("plants", JSON.stringify(fillerPlantData));
-    return fillerPlantData;
-  }
+  useEffect(() => {
+    const fetchPlants = async (searchName) => {
+      try {
+        const response = await searchPlants(searchName);
+        sessionStorage.setItem("plants", JSON.stringify(response));
+        setPlants(response);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+
+    fetchPlants("tree");
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,15 +49,9 @@ export default function ExplorerPage() {
     setError("");
     setIsLoading(true);
 
-    try {
-      const res = await api.get(`/identifyPlants?name=${searchName}`);
-      sessionStorage.setItem("plants", JSON.stringify(res.data));
-      setPlants(res.data || []);
-      setSearchName("");
-    } catch (error) {
-      console.error("Error searching for plants:", error);
-      setError(error.message);
-    }
+    const res = await searchPlants(searchName);
+    setPlants(res || []);
+    setSearchName("");
 
     setIsLoading(false);
   };

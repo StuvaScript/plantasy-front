@@ -16,7 +16,6 @@ const searchPlants = async (searchName) => {
 export default function ExplorerPage() {
   const location = useLocation();
   const { state } = location;
-  console.log("state:", state);
 
   const [plants, setPlants] = useState(
     (state?.linkedFrom === "details page" &&

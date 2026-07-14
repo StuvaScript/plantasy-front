@@ -7,12 +7,16 @@ import SortButton from "../components/SortButton";
 
 const searchPlants = async (searchName) => {
   const res = await api.get(`/identifyPlants?name=${searchName}`);
-  return res.data;
+  const sortedData = res.data.sort((a, b) =>
+    a.common_name.toLowerCase().localeCompare(b.common_name.toLowerCase())
+  );
+  return sortedData;
 };
 
 export default function ExplorerPage() {
   const location = useLocation();
   const { state } = location;
+  console.log("state:", state);
 
   const [plants, setPlants] = useState(
     (state?.linkedFrom === "details page" &&
@@ -27,17 +31,19 @@ export default function ExplorerPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchPlants = async (searchName) => {
-      try {
-        const response = await searchPlants(searchName);
-        sessionStorage.setItem("plants", JSON.stringify(response));
-        setPlants(response);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
+    if (state?.linkedFrom !== "details page") {
+      const fetchPlants = async (searchName) => {
+        try {
+          const response = await searchPlants(searchName);
+          sessionStorage.setItem("plants", JSON.stringify(response));
+          setPlants(response);
+        } catch (error) {
+          setError(error.message);
+        }
+      };
 
-    fetchPlants("tree");
+      fetchPlants("tree");
+    }
   }, []);
 
   const handleSubmit = async (e) => {
@@ -49,11 +55,16 @@ export default function ExplorerPage() {
     setError("");
     setIsLoading(true);
 
-    const res = await searchPlants(searchName);
-    setPlants(res || []);
-    setSearchName("");
-
-    setIsLoading(false);
+    try {
+      const res = await searchPlants(searchName);
+      sessionStorage.setItem("plants", JSON.stringify(res));
+      setPlants(res);
+      setSearchName("");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAdd = (imageURL, name) => {

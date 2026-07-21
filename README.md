@@ -25,6 +25,87 @@ You will have two folders inside one parent folder (one for front-end and one fo
 
 - Search Observations (filter by date, name, or location)
 
+---
+
+## Setting up the VS Code Debugger
+
+1. On your local machine create a new folder
+2. Bring in both the `plantasy-back` and the `plantasy-front` directories into that newly created parent folder
+3. In the parent folder create another child folder called `.vscode` which will be a sibling to the other two directories
+4. In the `.vscode` folder create two files called:
+   - `launch.json`
+   - `tasks.json`
+5. Paste the following in the `launch.json` file:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Backend (Node)",
+      "program": "${workspaceFolder}/plantasy-back/src/server.js",
+      "cwd": "${workspaceFolder}/plantasy-back",
+      "envFile": "${workspaceFolder}/plantasy-back/.env",
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Frontend (React)",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/plantasy-front",
+      "preLaunchTask": "Start Frontend Dev Server"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack App",
+      "configurations": ["Backend (Node)", "Frontend (React)"]
+    }
+  ]
+}
+```
+
+6. Paste the following in the `tasks.json` file:
+
+```json
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Frontend Dev Server",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/plantasy-front"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "VITE",
+          "endsPattern": "ready in"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    }
+  ]
+}
+```
+
+7. Open VS Code from the parent directory and now you should be able to run the debugger
+   - Just make sure the servers are not already in use
+
+---
+
 ### Setting up local development environment
 
 1. Clone this repository to the folder that was already created for both the front-end and back-end repos
